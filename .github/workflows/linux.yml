@@ -1,0 +1,59 @@
+name: Linux
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build-linux-x64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: python/cpython
+          ref: v3.12.2
+      - name: Register gcc problem matcher
+        run: echo "::add-matcher::.github/problem-matchers/gcc.json"
+      - name: Install dependencies
+        run: sudo ./.github/workflows/posix-deps-apt.sh
+      - name: Prepare Setup.local
+        run: echo "*static*" >> Modules/Setup.local
+      - name: Configure CPython
+        run: ./configure LDFLAGS="-static" --disable-shared
+      - name: Build CPython
+        run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a
+
+  build-linux-arm64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: apt-get update
+        run: sudo apt-get update
+      - name: Download qemu-user-static and debootstrap
+        run: sudo apt-get install qemu-user-static debootstrap
+      - name: Download arm64
+        run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
+      - name: Clone cpython
+        run: |
+          sudo mkdir rootfs/root/cpython
+          pushd rootfs/root/cpython
+          sudo git init
+          sudo git remote add origin https://github.com/python/cpython
+          sudo git config --local gc.auto 0
+          sudo git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v3.12.2*:refs/remotes/origin/v3.12.2* +refs/tags/v3.12.2*:refs/tags/v3.12.2*
+          sudo git checkout --progress --force refs/tags/v3.12.2
+          sudo git log -1 --format='%H'
+          popd
+      - name: Install dependencies
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
+      - name: Prepare Setup.local
+        run: echo "*static*" >> rootfs/root/cpython/Modules/Setup.local
+      - name: Configure CPython
+        run: chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
+      - name: Compile CPython
+        run: chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'

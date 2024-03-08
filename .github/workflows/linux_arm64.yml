@@ -1,0 +1,30 @@
+name: Linux arm64
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: apt-get update
+        run: sudo apt-get update
+      - name: Download qemu-user-static
+        run: sudo apt-get install qemu-user-static
+      - name: Download arm64
+        run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
+      - uses: actions/checkout@v4
+        with:
+          repository: python/cpython
+          ref: v3.12.2
+          path: rootfs/root/cpython
+      - name: Install dependencies
+        run: sudo chroot rootfs /root/cpython/.github/workflows/posix-deps-apt.sh
+      - name: Prepare Setup.local
+        run: echo "*static*" >> rootfs/root/cpython/Modules/Setup.local

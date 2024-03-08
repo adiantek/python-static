@@ -11,6 +11,7 @@ dir=$1
 cflags=""
 if [ "$(uname)" == "Darwin" ]; then
     cflags="-mmacosx-version-min=12.0"
+    brew install gettext
 fi
 
 gcc $cflags -c -o python3api.o python3api.c -I $1/Include/ -I $1/

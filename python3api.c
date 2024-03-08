@@ -93,6 +93,12 @@ char *python3api_eval(const char *module_name, const char *code, int start) {
   }
 }
 
+void python3api_free(char *ptr) {
+  if (ptr) {
+    free(ptr);
+  }
+}
+
 int main(int argc, char **argv) {
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);

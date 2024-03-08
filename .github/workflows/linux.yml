@@ -40,20 +40,24 @@ jobs:
         run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
       - name: Clone cpython
         run: |
-          sudo mkdir rootfs/root/cpython
-          pushd rootfs/root/cpython
-          sudo git init
-          sudo git remote add origin https://github.com/python/cpython
-          sudo git config --local gc.auto 0
-          sudo git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v3.12.2*:refs/remotes/origin/v3.12.2* +refs/tags/v3.12.2*:refs/tags/v3.12.2*
-          sudo git checkout --progress --force refs/tags/v3.12.2
-          sudo git log -1 --format='%H'
-          popd
+          echo mkdir rootfs/root/cpython > commands.sh
+          echo pushd rootfs/root/cpython >> commands.sh
+          echo git init >> commands.sh
+          echo git remote add origin https://github.com/python/cpython >> commands.sh
+          echo git config --local gc.auto 0 >> commands.sh
+          echo git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v3.12.2*:refs/remotes/origin/v3.12.2* +refs/tags/v3.12.2*:refs/tags/v3.12.2* >> commands.sh
+          echo git checkout --progress --force refs/tags/v3.12.2 >> commands.sh
+          echo git log -1 --format='%H' >> commands.sh
+          echo popd >> commands.sh
+          # Prepare Setup.local
+          echo 'echo "*static*" >> rootfs/root/cpython/Modules/Setup.local' >> commands.sh
+          echo chmod +x commands.sh
+          sudo ./commands.sh
       - name: Install dependencies
         run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
-      - name: Prepare Setup.local
-        run: echo "*static*" >> rootfs/root/cpython/Modules/Setup.local
       - name: Configure CPython
-        run: chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
       - name: Compile CPython
-        run: chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
+
+  build-macos-x64:

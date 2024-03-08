@@ -68,6 +68,7 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       PYTHONSTRICTEXTENSIONBUILD: 1
     strategy:
+      fail-fast: false
       matrix:
         os: [
           "macos-14",  # M1
@@ -87,6 +88,6 @@ jobs:
         GDBM_LIBS="-L$(brew --prefix gdbm)/lib -lgdbm" \
         ./configure \
           LDFLAGS="-static" --disable-shared \
-          --with-openssl="$(brew --prefix openssl@3.0)"
+          --with-openssl="$(brew --prefix openssl@3.0)" || cat config.log
     - name: Build CPython
       run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a

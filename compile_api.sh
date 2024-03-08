@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <dir>"
     exit 1

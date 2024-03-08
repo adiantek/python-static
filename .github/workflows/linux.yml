@@ -121,7 +121,7 @@ jobs:
         ./download_cpython.sh cpython
     - name: Configure CPython
       working-directory: cpython
-      run: ./configure --disable-shared
+      run: ac_cv_header_libintl_h=no ac_cv_lib_intl_textdomain=no ./configure --disable-shared
     - name: Build CPython
       working-directory: cpython
       run: make CFLAGS="-mmacosx-version-min=12.0" LINKFORSHARED=" " -j4 libpython3.12.a

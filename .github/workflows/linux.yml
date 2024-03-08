@@ -80,14 +80,8 @@ jobs:
       with:
         repository: python/cpython
         ref: v3.12.2
-    - name: Install Homebrew dependencies
-      run: brew install pkg-config openssl@3.0 xz gdbm tcl-tk
     - name: Configure CPython
       run: |
-        GDBM_CFLAGS="-I$(brew --prefix gdbm)/include" \
-        GDBM_LIBS="-L$(brew --prefix gdbm)/lib -lgdbm" \
-        ./configure \
-          --disable-shared \
-          --with-openssl="$(brew --prefix openssl@3.0)" || cat config.log
+        ./configure --disable-shared
     - name: Build CPython
       run: make LINKFORSHARED=" " -j4 libpython3.12.a

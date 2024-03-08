@@ -52,9 +52,8 @@ jobs:
         run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a
       - name: Compile API
         run: |
-          gcc -c -o python3api.o python3api.c -I cpython/Include/ -I cpython/
-          cp cpython/libpython3.12.a libpython3api.a
-          ar rcs libpython3api.a python3api.o
+          chmod +x compile_api.sh
+          ./compile_api.sh cpython
       - uses: actions/upload-artifact@v4
         with:
           name: python3.12-linux-x64
@@ -86,10 +85,10 @@ jobs:
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
       - name: Compile API
         run: |
-          sudo gcc -c -o python3api.o python3api.c -I rootfs/root/cpython/Include/ -I rootfs/root/cpython/
-          sudo cp rootfs/root/cpython/libpython3.12.a libpython3api.a
-          sudo ar rcs libpython3api.a python3api.o
-          sudo chmod 777 libpython3api.a
+          sudo cp python3api.c python3api.h compile_api.sh rootfs/root/
+          sudo chmod +x rootfs/root/compile_api.sh
+          sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh cpython'
+          sudo cp rootfs/root/cpython/{libpython3api.a,python3api} .
       - uses: actions/upload-artifact@v4
         with:
           name: python3.12-linux-arm64
@@ -124,9 +123,8 @@ jobs:
       run: make LINKFORSHARED=" " -j4 libpython3.12.a
     - name: Compile API
       run: |
-        gcc -c -o python3api.o python3api.c -I cpython/Include/ -I cpython/
-        cp cpython/libpython3.12.a libpython3api.a
-        ar rcs libpython3api.a python3api.o
+        chmod +x compile_api.sh
+        ./compile_api.sh cpython
     - uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-14'
       with:

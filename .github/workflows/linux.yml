@@ -52,10 +52,41 @@ jobs:
           # Prepare Setup.local
           echo 'echo "*static*" >> rootfs/root/cpython/Modules/Setup.local' >> commands.sh
           echo chmod +x commands.sh
-          sudo ./commands.sh
+          ls
+          sudo bash commands.sh
       - name: Install dependencies
         run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
       - name: Configure CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
       - name: Compile CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
+
+  build-macos-arm64:
+    env:
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      PYTHONSTRICTEXTENSIONBUILD: 1
+    strategy:
+      matrix:
+        os: [
+          "macos-14",  # M1
+          "macos-13",  # Intel
+        ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: python/cpython
+        ref: v3.12.2
+    - name: Install Homebrew dependencies
+      run: brew install pkg-config openssl@3.0 xz gdbm tcl-tk
+    - name: Configure CPython
+      run: |
+        GDBM_CFLAGS="-I$(brew --prefix gdbm)/include" \
+        GDBM_LIBS="-L$(brew --prefix gdbm)/lib -lgdbm" \
+        ./configure \
+          LDFLAGS="-static" --disable-shared \
+          --with-openssl="$(brew --prefix openssl@3.0)"
+    - name: Build CPython
+      run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a

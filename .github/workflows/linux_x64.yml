@@ -1,0 +1,29 @@
+name: Linux x64
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: https://github.com/python/cpython.git
+          ref: tags/v3.12.2
+      - name: Register gcc problem matcher
+        run: echo "::add-matcher::.github/problem-matchers/gcc.json"
+      - name: Install dependencies
+        run: sudo ./.github/workflows/posix-deps-apt.sh
+      - name: Prepare Setup.local
+        run: echo "*static*" >> Modules/Setup.local
+      - name: Configure CPython
+        run: ./configure LDFLAGS="-static" --disable-shared
+      - name: Build CPython
+        run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a

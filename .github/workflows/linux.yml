@@ -14,8 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Register gcc problem matcher
-        run: echo "::add-matcher::.github/problem-matchers/gcc.json"
       - name: Download CPython
         run: ./download_cpython.sh cpython
       - name: Install dependencies
@@ -53,7 +51,9 @@ jobs:
         run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
       - name: Download CPython
         # debootstrap is runned as root
-        run: sudo ./download_cpython.sh rootfs/root/cpython
+        run: |
+          chmod +x download_cpython.sh
+          sudo ./download_cpython.sh rootfs/root/cpython
       - name: Install dependencies
         run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
       - name: Prepare Setup.local
@@ -90,7 +90,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Download CPython
-      run: ./download_cpython.sh cpython
+      run: |
+        chmod +x download_cpython.sh
+        ./download_cpython.sh cpython
     - name: Configure CPython
       working-directory: cpython
       run: ./configure --disable-shared

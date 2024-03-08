@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: apt-get update
         run: sudo apt-get update
-      - name: Download qemu-user-static
-        run: sudo apt-get install qemu-user-static
+      - name: Download qemu-user-static and debootstrap
+        run: sudo apt-get install qemu-user-static debootstrap
       - name: Download arm64
-        run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
+        run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs http://azure.archive.ubuntu.com/ubuntu
       - uses: actions/checkout@v4
         with:
           repository: python/cpython

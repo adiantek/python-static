@@ -99,6 +99,7 @@ void python3api_free(char *ptr) {
   }
 }
 
+#ifdef PYTHON3API_TEST
 int main(int argc, char **argv) {
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
@@ -135,3 +136,4 @@ int main(int argc, char **argv) {
   python3api_finalize();
   return 0;
 }
+#endif

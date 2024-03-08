@@ -7,7 +7,7 @@
 #endif
 
 #include <Python.h>
-// #include <python3api.h>
+#include <python3api.h>
 
 PyStatus python3api_init(int argc, char **argv) {
   PyStatus status;

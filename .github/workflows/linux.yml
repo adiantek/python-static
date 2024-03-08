@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Download CPython
-        run: ./download_cpython.sh cpython
+        run: |
+          chmod +x download_cpython.sh
+          ./download_cpython.sh cpython
       - name: Install dependencies
         working-directory: cpython
         run: sudo ./.github/workflows/posix-deps-apt.sh

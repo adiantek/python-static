@@ -9,6 +9,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  compress-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download CPython
+        run: |
+          chmod +x download_cpython.sh
+          ./download_cpython.sh cpython
+      - name: Install zip
+        run: sudo apt-get install zip
+      - name: Compress
+        working-directory: cpython/Lib
+        # cannot be compressed - python doesn't have zlib
+        run: zip -0 -r ../../python312.zip *
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python312.zip
+          path: python312.zip
+      
+
   build-linux-x64:
     runs-on: ubuntu-latest
 
@@ -55,7 +75,7 @@ jobs:
         # debootstrap is runned as root
         run: |
           chmod +x download_cpython.sh
-          sudo ./download_cpython.sh rootfs/root/cpython
+          sudo bash ./download_cpython.sh rootfs/root/cpython
       - name: Install dependencies
         run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
       - name: Prepare Setup.local

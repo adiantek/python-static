@@ -59,5 +59,3 @@ jobs:
         run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
       - name: Compile CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
-
-  build-macos-x64:

@@ -9,10 +9,10 @@ fi
 
 dir=$1
 cflags=""
-ldflags=""
+ldflags="-lpthread"
 if [ "$(uname)" == "Darwin" ]; then
-    cflags="-mmacosx-version-min=12.0"
-    ldflags="-lintl"
+    cflags+=" -mmacosx-version-min=12.0"
+    ldflags+=" -lintl"
 fi
 
 gcc $cflags -c -o python3api.o python3api.c -I $1/Include/ -I $1/

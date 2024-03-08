@@ -124,7 +124,7 @@ jobs:
       run: ./configure --disable-shared
     - name: Build CPython
       working-directory: cpython
-      run: make LINKFORSHARED=" " -j4 libpython3.12.a
+      run: make CFLAGS="-mmacosx-version-min=12.0" LINKFORSHARED=" " -j4 libpython3.12.a
     - name: Compile API
       run: |
         chmod +x compile_api.sh

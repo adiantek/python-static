@@ -19,12 +19,22 @@ jobs:
         run: sudo apt-get install qemu-user-static debootstrap
       - name: Download arm64
         run: sudo debootstrap --components=main,universe --arch arm64 focal rootfs
-      - uses: actions/checkout@v4
-        with:
-          repository: python/cpython
-          ref: v3.12.2
-          path: rootfs/root/cpython
+      - name: Clone cpython
+        run: |
+          mkdir rootfs/root/cpython
+          pushd rootfs/root/cpython
+          git init
+          git remote add origin https://github.com/python/cpython
+          git config --local gc.auto 0
+          git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v3.12.2*:refs/remotes/origin/v3.12.2* +refs/tags/v3.12.2*:refs/tags/v3.12.2*
+          git checkout --progress --force refs/tags/v3.12.2
+          git log -1 --format='%H'
+          popd
       - name: Install dependencies
-        run: sudo chroot rootfs /root/cpython/.github/workflows/posix-deps-apt.sh
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
       - name: Prepare Setup.local
         run: echo "*static*" >> rootfs/root/cpython/Modules/Setup.local
+      - name: Configure CPython
+        run: chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
+      - name: Compile CPython
+        run: chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'

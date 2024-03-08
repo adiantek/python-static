@@ -87,7 +87,7 @@ jobs:
         GDBM_CFLAGS="-I$(brew --prefix gdbm)/include" \
         GDBM_LIBS="-L$(brew --prefix gdbm)/lib -lgdbm" \
         ./configure \
-          LDFLAGS="-static" --disable-shared \
+          --disable-shared \
           --with-openssl="$(brew --prefix openssl@3.0)" || cat config.log
     - name: Build CPython
       run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a

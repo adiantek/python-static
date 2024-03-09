@@ -61,7 +61,7 @@ jobs:
           name: python3.12-linux-x64
           path: |
             libpython3api.a
-            python3api
+            python3api_test
 
   build-linux-arm64:
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
       - name: Prepare Setup.local
         run: sudo chroot rootfs sh -c 'cd ~/cpython && echo "*static*" >> Modules/Setup.local'
       - name: Configure CPython
-        run: sudo chroot rootfs sh -c 'cd ~/cpython && ac_cv_lib_util_openpty=no ./configure LDFLAGS="-static" --disable-shared'
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
       - name: Build CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
       - name: Compile API
@@ -92,13 +92,13 @@ jobs:
           sudo cp python3api.c python3api.h compile_api.sh rootfs/root/
           sudo chmod +x rootfs/root/compile_api.sh
           sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh cpython'
-          sudo cp rootfs/root/cpython/{libpython3api.a,python3api} .
+          sudo cp rootfs/root/cpython/{libpython3api.a,python3api_test} .
       - uses: actions/upload-artifact@v4
         with:
           name: python3.12-linux-arm64
           path: |
             libpython3api.a
-            python3api
+            python3api_test
 
   build-macos:
     env:
@@ -137,14 +137,14 @@ jobs:
         name: python3.12-macos-arm64
         path: |
           libpython3api.a
-          python3api
+          python3api_test
     - uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-13'
       with:
         name: python3.12-macos-x64
         path: |
           libpython3api.a
-          python3api
+          python3api_test
   
   build-windows:
     runs-on: windows-latest

@@ -14,34 +14,36 @@ int main(int argc, char **argv) {
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
 
-  printf("python3api_init: %s\n", python3api_init(argc, argv).err_msg);
-  {
-    char *ret = python3api_eval("__api__", "def foo():\n  print('Hello from Python!')\n  return 123\ndef bar():\n  return foo()", Py_file_input);
-    printf("ret: %s\n", ret);
-    free(ret);
+  for (int i = 0; i < 3; i++) {
+    printf("python3api_init: %s\n", python3api_init(argc, argv).err_msg);
+    {
+        char *ret = python3api_eval("__api__", "def foo():\n  print('Hello from Python!')\n  return 123\ndef bar():\n  return foo()", Py_file_input);
+        printf("ret: %s\n", ret);
+        free(ret);
+    }
+    {
+        char *ret = python3api_eval("__api__", "import json", Py_file_input);
+        printf("ret: %s\n", ret);
+        free(ret);
+    }
+    {
+        char *ret = python3api_eval("__api__", "import sys", Py_file_input);
+        printf("ret: %s\n", ret);
+        free(ret);
+    }
+    {
+        char *ret = python3api_eval("__api__", "json.dumps(bar())", Py_eval_input);
+        printf("ret: %s\n", ret);
+        free(ret);
+    }
+    python3api_clear("__api__");
+    {
+        char *ret = python3api_eval("__api__", "json.dumps(bar())", Py_eval_input);
+        printf("ret: %s\n", ret);
+        free(ret);
+    }
+    
+    printf("python3api_finalize: %d\n", python3api_finalize());
   }
-  {
-    char *ret = python3api_eval("__api__", "import json", Py_file_input);
-    printf("ret: %s\n", ret);
-    free(ret);
-  }
-  {
-    char *ret = python3api_eval("__api__", "import sys", Py_file_input);
-    printf("ret: %s\n", ret);
-    free(ret);
-  }
-  {
-    char *ret = python3api_eval("__api__", "json.dumps(bar())", Py_eval_input);
-    printf("ret: %s\n", ret);
-    free(ret);
-  }
-  python3api_clear("__api__");
-  {
-    char *ret = python3api_eval("__api__", "json.dumps(bar())", Py_eval_input);
-    printf("ret: %s\n", ret);
-    free(ret);
-  }
-  
-  python3api_finalize();
   return 0;
 }

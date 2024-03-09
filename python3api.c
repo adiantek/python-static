@@ -24,8 +24,10 @@ PyStatus python3api_init(int argc, char **argv) {
   return status;
 }
 
-void python3api_finalize() {
-  Py_FinalizeEx();
+int python3api_finalize() {
+  int status = Py_FinalizeEx();
+  pymain_free();
+  return status;
 }
 
 bool python3api_clear(const char *module_name) {

@@ -89,7 +89,7 @@ jobs:
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
       - name: Compile API
         run: |
-          sudo cp python3api.c python3api.h compile_api.sh rootfs/root/
+          sudo cp python3api.c python3api.h python3api_test.c compile_api.sh rootfs/root/
           sudo chmod +x rootfs/root/compile_api.sh
           sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh cpython'
           sudo cp rootfs/root/cpython/{libpython3api.a,python3api_test} .

@@ -28,7 +28,7 @@ typedef struct {
 #endif
 
 PyStatus python3api_init(int argc, char **argv);
-void python3api_finalize();
+int python3api_finalize();
 bool python3api_clear(const char *module_name);
 char *python3api_eval(const char *module_name, const char *code, int start);
 void python3api_free(char *ptr);

@@ -13,7 +13,7 @@ pushd $outdir
 git init
 git remote add origin https://github.com/python/cpython
 git config --local gc.auto 0
-git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v$version*:refs/remotes/origin/v$version* +refs/tags/v$version*:refs/tags/v$version*
-git checkout --progress --force refs/tags/v$version
+git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v3.12.2*:refs/remotes/origin/v3.12.2* +refs/tags/v3.12.2*:refs/tags/v3.12.2*
+git checkout --progress --force refs/tags/v3.12.2
 git log -1 --format='%H'
 popd

@@ -27,7 +27,7 @@ typedef struct {
 #define Py_eval_input 258
 #endif
 
-PyStatus python3api_init(int argc, char **argv);
+PyStatus python3api_init(const char *python_modules, int argc, char **argv);
 int python3api_finalize();
 bool python3api_clear(const char *module_name);
 char *python3api_eval(const char *module_name, const char *code, int start);

@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
 
-  printf("python3api_init: %s\n", python3api_init(argc, argv).err_msg);
+  printf("python3api_init: %s\n", python3api_init("python.zip.enc", argc, argv).err_msg);
   for (int i = 0; i < 3; i++) {
     python3api_clear("__api__");
     {

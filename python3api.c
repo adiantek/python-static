@@ -1,9 +1,10 @@
 #include <Python.h>
 #include "python3api.h"
+#include <stdlib.h>
 
 void _Py_ClearArgcArgv(void);
 
-PyStatus python3api_init(int argc, char **argv) {
+PyStatus python3api_init(const char *python_modules, int argc, char **argv) {
   PyStatus status;
 
   PyConfig config;
@@ -14,7 +15,10 @@ PyStatus python3api_init(int argc, char **argv) {
     return status;
   }
   config.isolated = 1;
-  PyWideStringList_Append(&config.module_search_paths, L"python.zip.enc");
+  wchar_t modules[2048];
+  if (mbstowcs(modules, python_modules, 2048) != -1) {
+    PyWideStringList_Append(&config.module_search_paths, modules);
+  }
   config.module_search_paths_set = 1;
   status = Py_InitializeFromConfig(&config);
   if (PyStatus_Exception(status)) {

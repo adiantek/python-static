@@ -143,3 +143,29 @@ jobs:
         path: |
           libpython3api.a
           python3api
+  
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download CPython
+        shell: bash
+        run: |
+          chmod +x download_cpython.sh
+          ./download_cpython.sh cpython
+      - name: Apply patch
+        shell: bash
+        working-directory: cpython
+        run: patch -p1 < ../cpython-windows.patch
+      - name: Install dependencies
+        working-directory: cpython
+        run: PCbuild\get_externals.bat
+      - name: Build _freeze_module
+        working-directory: cpython
+        run: msbuild PCbuild\_freeze_module.vcxproj /p:Configuration=Release
+      - name: Build CPython (x64)
+        working-directory: cpython
+        run: msbuild PCbuild\pythoncore.vcxproj /p:Configuration=Release /p:Platform=x64
+      - name: Build CPython (ARM64)
+        working-directory: cpython
+        run: msbuild PCbuild\pythoncore.vcxproj /p:Configuration=Release /p:Platform=ARM64

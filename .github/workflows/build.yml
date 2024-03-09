@@ -30,7 +30,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: python.zip
-          path: python.zip
+          path: python.zip.enc
       
 
   build-linux-x64:

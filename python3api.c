@@ -14,7 +14,7 @@ PyStatus python3api_init(int argc, char **argv) {
     return status;
   }
   config.isolated = 1;
-  PyWideStringList_Append(&config.module_search_paths, L"python.zip");
+  PyWideStringList_Append(&config.module_search_paths, L"python.zip.enc");
   config.module_search_paths_set = 1;
   status = Py_InitializeFromConfig(&config);
   if (PyStatus_Exception(status)) {

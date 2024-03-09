@@ -15,7 +15,6 @@ int main(int argc, char **argv) {
   setbuf(stderr, NULL);
 
   printf("python3api_init: %s\n", python3api_init(argc, argv).err_msg);
-  PyErr_Clear();
   {
     char *ret = python3api_eval("__api__", "def foo():\n  print('Hello from Python!')\n  return 123\ndef bar():\n  return foo()", Py_file_input);
     printf("ret: %s\n", ret);

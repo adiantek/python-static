@@ -1,6 +1,8 @@
 #include <Python.h>
 #include "python3api.h"
 
+void _Py_ClearArgcArgv(void);
+
 PyStatus python3api_init(int argc, char **argv) {
   PyStatus status;
 
@@ -26,11 +28,7 @@ PyStatus python3api_init(int argc, char **argv) {
 
 int python3api_finalize() {
   int status = Py_FinalizeEx();
-  _PyImport_Fini2();
-  _PyPathConfig_ClearGlobal();
-  _Py_ClearStandardStreamEncoding();
   _Py_ClearArgcArgv();
-  _PyRuntime_Finalize();
   return status;
 }
 

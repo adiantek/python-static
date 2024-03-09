@@ -14,8 +14,8 @@ if [ "$(uname)" == "Darwin" ]; then
     cflags+=" -mmacosx-version-min=12.0"
 fi
 
-gcc $cflags -c -o python3api.o python3api.c -I $1/Include/ -I $1/
-cp $1/libpython$version.a libpython3api.a
+gcc $cflags -c -o python3api.o python3api.c -I $dir/Include/ -I $dir/
+cp $dir/libpython$version.a libpython3api.a
 ar rcs libpython3api.a python3api.o
 
 gcc $cflags -o python3api_test python3api_test.c libpython3api.a $ldflags

@@ -191,7 +191,7 @@ jobs:
           name: python3.12-windows-x64
           path: |
             python3api.lib
-            python3api.exe
+            python3api_test.exe
       - name: Configure build for ARM64
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -203,5 +203,5 @@ jobs:
           name: python3.12-windows-arm64
           path: |
             python3api.lib
-            python3api.exe
+            python3api_test.exe
         

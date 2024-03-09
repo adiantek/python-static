@@ -156,10 +156,7 @@ jobs:
       - name: Apply patch
         shell: bash
         working-directory: cpython
-        run: |
-          ls
-          pwd
-          patch -p1 < ../cpython-windows.patch
+        run: patch -p1 < ../cpython_windows.patch
       - name: Install dependencies
         working-directory: cpython
         run: PCbuild\get_externals.bat

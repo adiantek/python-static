@@ -19,14 +19,16 @@ jobs:
           ./download_cpython.sh cpython
       - name: Install zip
         run: sudo apt-get install zip
+      - name: Remove tests
+        run: rm -rf cpython/Lib/test
       - name: Compress
         working-directory: cpython/Lib
         # cannot be compressed - python doesn't have zlib
-        run: zip -0 -r ../../python312.zip *
+        run: zip -0 -r ../../python.zip *
       - uses: actions/upload-artifact@v4
         with:
-          name: python312.zip
-          path: python312.zip
+          name: python.zip
+          path: python.zip
       
 
   build-linux-x64:

@@ -17,4 +17,5 @@ fi
 gcc $cflags -c -o python3api.o python3api.c -I $1/Include/ -I $1/
 cp $1/libpython3.12.a libpython3api.a
 ar rcs libpython3api.a python3api.o
-gcc $cflags -o python3api -DPYTHON3API_TEST python3api.c $1/libpython3.12.a -I $1/Include/ -I $1/ $ldflags
+
+gcc $cflags -o python3api_test python3api_test.c libpython3api.a $ldflags

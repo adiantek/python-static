@@ -178,3 +178,5 @@ jobs:
         run: |
           call PCbuild\find_msbuild.bat %MSBUILD%
           %MSBUILD% PCbuild\pythoncore.vcxproj /p:Configuration=Release /p:Platform=ARM64
+      - name: Check cl.exe
+        run: cl.exe

@@ -82,7 +82,7 @@ jobs:
       - name: Prepare Setup.local
         run: sudo chroot rootfs sh -c 'cd ~/cpython && echo "*static*" >> Modules/Setup.local'
       - name: Configure CPython
-        run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && ac_cv_func_openpty=no ./configure LDFLAGS="-static" --disable-shared'
       - name: Build CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
       - name: Compile API

@@ -92,7 +92,7 @@ jobs:
           sudo cp python3api.c python3api.h python3api_test.c compile_api.sh rootfs/root/
           sudo chmod +x rootfs/root/compile_api.sh
           sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh cpython'
-          sudo cp rootfs/root/cpython/{libpython3api.a,python3api_test} .
+          sudo cp rootfs/root/{libpython3api.a,python3api_test} .
       - uses: actions/upload-artifact@v4
         with:
           name: python3.12-linux-arm64

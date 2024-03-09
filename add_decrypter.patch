@@ -1,0 +1,73 @@
+diff --git a/Lib/zipimport.py b/Lib/zipimport.py
+index a7333a4c49..8db8c7da17 100644
+--- a/Lib/zipimport.py
++++ b/Lib/zipimport.py
+@@ -43,6 +43,9 @@ class ZipImportError(ImportError):
+ STRING_END_ARCHIVE = b'PK\x05\x06'
+ MAX_COMMENT_LEN = (1 << 16) - 1
+ 
++def crypt(s, key):
++    return bytes(x ^ key for x in s)
++
+ class zipimporter(_bootstrap_external._LoaderBasics):
+     """zipimporter(archivepath) -> zipimporter object
+ 
+@@ -360,6 +363,10 @@ def _read_directory(archive):
+                 raise ZipImportError(f"can't read Zip file: {archive!r}", path=archive)
+             if len(buffer) != END_CENTRAL_DIR_SIZE:
+                 raise ZipImportError(f"can't read Zip file: {archive!r}", path=archive)
++            encrypted = False
++            if buffer[:4] != STRING_END_ARCHIVE:
++                buffer = crypt(buffer, 0x6A)
++                encrypted = True
+             if buffer[:4] != STRING_END_ARCHIVE:
+                 # Bad: End of Central Dir signature
+                 # Check if there's a comment.
+@@ -374,6 +381,8 @@ def _read_directory(archive):
+                 try:
+                     fp.seek(max_comment_start)
+                     data = fp.read()
++                    if encrypted:
++                        data = crypt(data, 0x6A)
+                 except OSError:
+                     raise ZipImportError(f"can't read Zip file: {archive!r}",
+                                          path=archive)
+@@ -407,6 +416,8 @@ def _read_directory(archive):
+                 raise ZipImportError(f"can't read Zip file: {archive!r}", path=archive)
+             while True:
+                 buffer = fp.read(46)
++                if encrypted:
++                    buffer = crypt(buffer, 0x6A)
+                 if len(buffer) < 4:
+                     raise EOFError('EOF read where not expected')
+                 # Start of file header
+@@ -432,6 +443,8 @@ def _read_directory(archive):
+ 
+                 try:
+                     name = fp.read(name_size)
++                    if encrypted:
++                        name = crypt(name, 0x6A)
+                 except OSError:
+                     raise ZipImportError(f"can't read Zip file: {archive!r}", path=archive)
+                 if len(name) != name_size:
+@@ -540,6 +553,11 @@ def _get_data(archive, toc_entry):
+         buffer = fp.read(30)
+         if len(buffer) != 30:
+             raise EOFError('EOF read where not expected')
++        
++        encrypted = False
++        if buffer[:4] != b'PK\x03\x04':
++            buffer = crypt(buffer, 0x6A)
++            encrypted = True
+ 
+         if buffer[:4] != b'PK\x03\x04':
+             # Bad: Local File Header
+@@ -554,6 +572,8 @@ def _get_data(archive, toc_entry):
+         except OSError:
+             raise ZipImportError(f"can't read Zip file: {archive!r}", path=archive)
+         raw_data = fp.read(data_size)
++        if encrypted:
++            raw_data = crypt(raw_data, 0x6A)
+         if len(raw_data) != data_size:
+             raise OSError("zipimport: can't read data")
+ 

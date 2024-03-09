@@ -8,6 +8,11 @@ on:
 
   workflow_dispatch:
 
+env:
+  PYTHON_VERSION: 3.12.2
+  PYTHON_LIB_VERSION: 3.12
+  PYTHON_WIN_LIB_VERSION: 312
+
 jobs:
   compress-lib:
     runs-on: ubuntu-latest
@@ -16,7 +21,7 @@ jobs:
       - name: Download CPython
         run: |
           chmod +x download_cpython.sh
-          ./download_cpython.sh cpython
+          ./download_cpython.sh ${{ env.PYTHON_VERSION }} cpython
       - name: Install zip
         run: sudo apt-get install zip
       - name: Remove tests
@@ -41,7 +46,7 @@ jobs:
       - name: Download CPython
         run: |
           chmod +x download_cpython.sh
-          ./download_cpython.sh cpython
+          ./download_cpython.sh ${{ env.PYTHON_VERSION }} cpython
       - name: Install dependencies
         working-directory: cpython
         run: sudo ./.github/workflows/posix-deps-apt.sh
@@ -53,14 +58,14 @@ jobs:
         run: ./configure LDFLAGS="-static" --disable-shared
       - name: Build CPython
         working-directory: cpython
-        run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a
+        run: make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a
       - name: Compile API
         run: |
           chmod +x compile_api.sh
-          ./compile_api.sh cpython
+          ./compile_api.sh ${{ env.PYTHON_LIB_VERSION }} cpython
       - uses: actions/upload-artifact@v4
         with:
-          name: python3.12-linux-x64
+          name: python-${{ env.PYTHON_VERSION }}-linux-x64
           path: |
             libpython3api.a
             python3api_test
@@ -80,7 +85,7 @@ jobs:
         # debootstrap is runned as root
         run: |
           chmod +x download_cpython.sh
-          sudo bash ./download_cpython.sh rootfs/root/cpython
+          sudo bash ./download_cpython.sh ${{ env.PYTHON_VERSION }} rootfs/root/cpython
       - name: Install dependencies
         run: sudo chroot rootfs sh -c 'cd ~/cpython && .github/workflows/posix-deps-apt.sh'
       - name: Prepare Setup.local
@@ -88,16 +93,16 @@ jobs:
       - name: Configure CPython
         run: sudo chroot rootfs sh -c 'cd ~/cpython && ./configure LDFLAGS="-static" --disable-shared'
       - name: Build CPython
-        run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython3.12.a'
+        run: sudo chroot rootfs sh -c 'cd ~/cpython && make LDFLAGS="-static" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a'
       - name: Compile API
         run: |
           sudo cp python3api.c python3api.h python3api_test.c compile_api.sh rootfs/root/
           sudo chmod +x rootfs/root/compile_api.sh
-          sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh cpython'
+          sudo chroot rootfs sh -c 'cd ~/ && ./compile_api.sh ${{ env.PYTHON_LIB_VERSION }} cpython'
           sudo cp rootfs/root/{libpython3api.a,python3api_test} .
       - uses: actions/upload-artifact@v4
         with:
-          name: python3.12-linux-arm64
+          name: python-${{ env.PYTHON_VERSION }}-linux-arm64
           path: |
             libpython3api.a
             python3api_test
@@ -122,28 +127,28 @@ jobs:
     - name: Download CPython
       run: |
         chmod +x download_cpython.sh
-        ./download_cpython.sh cpython
+        ./download_cpython.sh ${{ env.PYTHON_VERSION }} cpython
     - name: Configure CPython
       working-directory: cpython
       run: ac_cv_header_libintl_h=no ac_cv_lib_intl_textdomain=no ./configure --disable-shared
     - name: Build CPython
       working-directory: cpython
-      run: make CFLAGS="-mmacosx-version-min=12.0" LINKFORSHARED=" " -j4 libpython3.12.a
+      run: make CFLAGS="-mmacosx-version-min=12.0" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a
     - name: Compile API
       run: |
         chmod +x compile_api.sh
-        ./compile_api.sh cpython
+        ./compile_api.sh ${{ env.PYTHON_LIB_VERSION }} cpython
     - uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-14'
       with:
-        name: python3.12-macos-arm64
+        name: python-${{ env.PYTHON_VERSION }}-macos-arm64
         path: |
           libpython3api.a
           python3api_test
     - uses: actions/upload-artifact@v4
       if: matrix.os == 'macos-13'
       with:
-        name: python3.12-macos-x64
+        name: python-${{ env.PYTHON_VERSION }}-macos-x64
         path: |
           libpython3api.a
           python3api_test
@@ -156,7 +161,7 @@ jobs:
         shell: bash
         run: |
           chmod +x download_cpython.sh
-          ./download_cpython.sh cpython
+          ./download_cpython.sh ${{ env.PYTHON_VERSION }} cpython
       - name: Apply patch
         shell: bash
         working-directory: cpython
@@ -187,10 +192,10 @@ jobs:
         with:
           arch: x64
       - name: Build API (x64)
-        run: .\win_compile.bat amd64
+        run: .\win_compile.bat amd64 ${{ env.PYTHON_WIN_LIB_VERSION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: python3.12-windows-x64
+          name: python-${{ env.PYTHON_VERSION }}-windows-x64
           path: |
             python3api.lib
             python3api_test.exe
@@ -199,10 +204,10 @@ jobs:
         with:
           arch: amd64_arm64
       - name: Build API (ARM64)
-        run: .\win_compile.bat arm64
+        run: .\win_compile.bat arm64 ${{ env.PYTHON_WIN_LIB_VERSION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: python3.12-windows-arm64
+          name: python-${{ env.PYTHON_VERSION }}-windows-arm64
           path: |
             python3api.lib
             python3api_test.exe

@@ -2,12 +2,12 @@
 
 set -xe
 
-if [ -z "$1" ]; then
-    echo "Usage: $0 <dir>"
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <version> <dir>"
     exit 1
 fi
-
-dir=$1
+version=$1
+dir=$2
 cflags=""
 ldflags="-pthread -lm -ldl -lutil"
 if [ "$(uname)" == "Darwin" ]; then
@@ -15,7 +15,7 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 gcc $cflags -c -o python3api.o python3api.c -I $1/Include/ -I $1/
-cp $1/libpython3.12.a libpython3api.a
+cp $1/libpython$version.a libpython3api.a
 ar rcs libpython3api.a python3api.o
 
 gcc $cflags -o python3api_test python3api_test.c libpython3api.a $ldflags

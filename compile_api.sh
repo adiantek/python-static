@@ -9,7 +9,7 @@ fi
 
 dir=$1
 cflags=""
-ldflags="-lpthread"
+ldflags="-pthread"
 if [ "$(uname)" == "Darwin" ]; then
     cflags+=" -mmacosx-version-min=12.0"
 fi

@@ -26,7 +26,11 @@ PyStatus python3api_init(int argc, char **argv) {
 
 int python3api_finalize() {
   int status = Py_FinalizeEx();
-  pymain_free();
+  _PyImport_Fini2();
+  _PyPathConfig_ClearGlobal();
+  _Py_ClearStandardStreamEncoding();
+  _Py_ClearArgcArgv();
+  _PyRuntime_Finalize();
   return status;
 }
 

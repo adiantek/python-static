@@ -34,6 +34,8 @@ char *python3api_eval(const char *module_name, const char *code, int start);
 void python3api_free(char *ptr);
 void *python3api_ensure_gil();
 void python3api_release_gil(void *state);
+void *python3api_save_thread();
+void python3api_restore_thread(void *state);
 
 #ifdef __cplusplus
 }

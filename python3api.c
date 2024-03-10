@@ -111,3 +111,12 @@ void python3api_release_gil(void *state) {
   PyGILState_Release(*((PyGILState_STATE *)state));
   free(state);
 }
+
+void *python3api_save_thread() {
+  PyThreadState *state = PyEval_SaveThread();
+  return state;
+}
+
+void python3api_restore_thread(void *state) {
+  PyEval_RestoreThread((PyThreadState *)state);
+}

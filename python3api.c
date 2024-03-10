@@ -100,3 +100,14 @@ void python3api_free(char *ptr) {
     free(ptr);
   }
 }
+
+void *python3api_ensure_gil() {
+  PyGILState_STATE *state = malloc(sizeof(PyGILState_STATE));
+  *state = PyGILState_Ensure();
+  return state;
+}
+
+void python3api_release_gil(void *state) {
+  PyGILState_Release(*((PyGILState_STATE *)state));
+  free(state);
+}

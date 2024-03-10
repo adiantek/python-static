@@ -32,6 +32,8 @@ int python3api_finalize();
 bool python3api_clear(const char *module_name);
 char *python3api_eval(const char *module_name, const char *code, int start);
 void python3api_free(char *ptr);
+void *python3api_ensure_gil();
+void python3api_release_gil(void *state);
 
 #ifdef __cplusplus
 }

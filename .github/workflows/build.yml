@@ -133,7 +133,7 @@ jobs:
       run: ac_cv_header_libintl_h=no ac_cv_lib_intl_textdomain=no ./configure --disable-shared
     - name: Build CPython
       working-directory: cpython
-      run: make CFLAGS="-mmacosx-version-min=12.0" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a
+      run: make CFLAGS="-mmacosx-version-min=10.0" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a
     - name: Compile API
       run: |
         chmod +x compile_api.sh

@@ -130,7 +130,7 @@ jobs:
         ./download_cpython.sh ${{ env.PYTHON_VERSION }} cpython
     - name: Configure CPython
       working-directory: cpython
-      run: ac_cv_header_libintl_h=no ac_cv_lib_intl_textdomain=no ./configure --disable-shared
+      run: ac_cv_header_libintl_h=no ac_cv_lib_intl_textdomain=no ./configure --disable-shared CFLAGS="-mmacosx-version-min=10.0"
     - name: Build CPython
       working-directory: cpython
       run: make CFLAGS="-mmacosx-version-min=10.0" LINKFORSHARED=" " -j4 libpython${{ env.PYTHON_LIB_VERSION }}.a

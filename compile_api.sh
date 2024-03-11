@@ -11,7 +11,7 @@ dir=$2
 cflags=""
 ldflags="-pthread -lm -ldl -lutil"
 if [ "$(uname)" == "Darwin" ]; then
-    cflags+=" -mmacosx-version-min=11.0"
+    cflags+=" -mmacosx-version-min=13.0"
 fi
 
 gcc $cflags -c -o python3api.o python3api.c -I $dir/Include/ -I $dir/
